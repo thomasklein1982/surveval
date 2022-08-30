@@ -1,7 +1,5 @@
 <template>
   <div class="screen">
-    Editor
-    {{daten.length}}
     <table v-if="false" class="daten">
       <tr><th>Nr</th><th v-for="(item,i) in allItems">{{item.caption}}</th></tr>
       <tr><th></th><th v-for="(item,i) in allItems">{{item.isNumeric}}</th></tr>
@@ -12,10 +10,11 @@
       </template>
     </table>
     <div>
-      Diagramme:
       <template v-for="(item,i) in allItems" >
-        {{item.caption}}
-        <DataDiagram v-if="i!==groupBy" :group-by="groupBy" :records="records" :item-index="i"/> 
+        <template v-if="i!==groupBy">
+          <h2>{{item.caption}}</h2>
+          <DataDiagram :group-by="groupBy" :records="records" :item-index="i"/> 
+        </template>
       </template>
     </div>
   </div>

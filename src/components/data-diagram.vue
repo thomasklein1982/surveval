@@ -1,5 +1,5 @@
 <template>
-  <table>
+  <table v-if="false">
     <tr>
       <th>Percentil</th>
       <th>Gesamt</th>
@@ -9,8 +9,8 @@
       <th>{{perc.name}}</th><td>{{calcPercentile(perc.p)}}</td><td v-for="(s,i) in groupByItem.scales">{{calcPercentile(perc.p,s)}}</td>
     </tr>
   </table>
-  <div>
-    <DiagramFrame ref="frame" :scale="0.2" height="6cm" :min-x="item.scales[0]-0.5" :max-x="item.scales[item.scales.length-1]+2" :min-y="-1" :max-y="boxPlots.offset+boxPlots.distance*3+boxPlots.height/2+0.4">
+  <div :style="{display: 'flex', 'flex-direction': 'row', 'align-items': 'center'}">
+    <DiagramFrame ref="frame" :scale="0.2" :font-scale="2" height="8cm" :min-x="item.scales[0]-1" :max-x="item.scales[item.scales.length-1]+additionalX" :min-y="-1" :max-y="maxY">
       <DiagramAxis :arrow="0" :labels="!item.hasScaleDescriptions" include-zero :min="item.scales[0]" :max="item.scales[item.scales.length-1]" />
       <template v-if="item.hasScaleDescriptions">
         <diagram-label v-for="(d,i) in item.scaleDescriptions" :x="item.scales[i]" :y="-0.1-(i%2)*0.2" pos="b">{{d}}</diagram-label>
@@ -20,10 +20,19 @@
         <BoxPlot :label="s" v-for="(s,i) in groupByItem.scales" :offset="boxPlots.offset+(i+1)*boxPlots.distance" :height="boxPlots.height" :quartils="[calcPercentile(percentiles[0].p,s),calcPercentile(percentiles[1].p,s),calcPercentile(percentiles[2].p,s),calcPercentile(percentiles[3].p,s),calcPercentile(percentiles[4].p,s)]"/>
       </template>
       <template v-else>
-        <multi-balken v-for="(s,i) in item.scales" :x="s" :heights="calcTotals(s)"/>
+        <multi-balken :colors="balken.colors" v-for="(s,i) in item.scales" :x="s" :heights="calcTotals(s)" :scale-y="scaleFactorBalken"/>
       </template>
     </DiagramFrame>
-    <Button :class="showBoxPlots? 'pi pi-align-left': 'pi pi-stop'" @click="showBoxPlots=!showBoxPlots"/>
+    <div>
+      <div v-if="!showBoxPlots">
+        <div v-for="(s,i) in groupByItem.scales">
+          <div style="width: 0.4cm; height: 0.4cm; display: inline-block" :style="'background-color: '+balken.colors[i]"/>
+          {{s}}
+        </div>
+        
+      </div>
+      <Button :class="showBoxPlots? 'pi pi-align-left': 'pi pi-stop'" @click="showBoxPlots=!showBoxPlots"/>
+    </div>
   </div>
 </template>
 
@@ -47,6 +56,9 @@ export default{
         height: 0.5,
         distance: 0.9,
         offset: 0.5
+      },
+      balken: {
+        colors: ["red","lime","blue","yellow","cyan","magenta"]
       },
       showBoxPlots: true,
       percentiles: [
@@ -74,6 +86,34 @@ export default{
     }
   }, 
   computed: {
+    scaleFactorBalken(){
+      let max=-10000;
+      for(let i=0;i<this.item.scales.length;i++){
+        let s=this.item.scales[i];
+        let totals=this.calcTotals(s);
+        if(max<totals[0]){
+          max=totals[0];
+        }
+      }
+      return this.maxY/max;
+    },
+    additionalX(){
+      if(this.showBoxPlots){
+        return 4;
+      }else{
+        return 2;
+      }
+    },
+    maxY(){
+      let m;
+      if(this.showBoxPlots){
+        m=this.boxPlots.offset+this.boxPlots.distance*3+this.boxPlots.height/2;
+      }else{
+        m=this.boxPlots.offset+this.boxPlots.distance*3+this.boxPlots.height/2;
+      }
+      m+=0.4;
+      return m;
+    },
     item(){
       return this.records[0][this.itemIndex].item;
     },

@@ -1,5 +1,7 @@
 <template>
-  <rect v-for="(h,i) in heights" :x="offsets[i]-width/2" :y="0" :width="width" :height="h" />
+  <g>
+    <rect :fill="colors[i]" v-for="(h,i) in heights" :x="x+offsets[i]-width/2" :y="0" :width="width" :height="h*scaleY" />
+  </g>
 </template>
 
 <script>
@@ -7,6 +9,13 @@ export default{
   props: {
     x: Number,
     heights: Array,
+    scaleY: {
+      type: Number,
+      default: 1
+    },
+    colors: {
+      type: Array
+    }
   },
   computed: {
     width(){
