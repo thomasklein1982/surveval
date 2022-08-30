@@ -1,12 +1,30 @@
-<script setup>
-import StartScreen from './components/start-screen.vue'
-</script>
-
 <template>
   <div style="width:100%; height: 100%; overflow: hidden">
-    <StartScreen/>
+    <StartScreen v-if="!daten" @upload="uploadRawData"/>
+    <Editor v-else :daten="daten"/>
   </div>
 </template>
+
+<script>
+  import StartScreen from './components/start-screen.vue';
+  import Editor from './components/editor.vue';
+  
+  export default{
+    data(){
+      return {
+        daten: null
+      }
+    },
+    methods: {
+      uploadRawData(daten){
+        this.daten=daten;
+      }
+    },
+    components: {
+      StartScreen,Editor
+    }
+  }
+</script>
 
 <style scoped>
 .logo {

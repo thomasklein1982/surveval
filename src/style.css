@@ -12,4 +12,18 @@ html,body{
   position: absolute;
   left: 0;
   top: 0;
+  overflow: auto;
+}
+
+table{
+  border-collapse: collapse;
+}
+
+.daten{
+
+  text-align: center;
+}
+
+.daten td{
+  border: 1pt solid black;
 }

@@ -17,7 +17,7 @@ export default {
       let s=await upload({accept: "text/csv"});
       if(!s) return null;
       
-      let raw=s.code;
+      let raw=s.code.trim();
       raw=raw.split("\n");
       let data=[];
       for(let i=0;i<raw.length;i++){
